@@ -14,6 +14,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -22,30 +24,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gmailclone.R
-import com.example.gmailclone.ui.theme.GmailCloneTheme
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar() {
-    Box(modifier = Modifier.padding(10.dp)){
-        Card(modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp), elevation = CardDefaults.cardElevation()) {
+fun AppBar(scope: CoroutineScope, drawerState: DrawerState) {
+    Box(modifier = Modifier.padding(10.dp)) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp), elevation = CardDefaults.cardElevation()
+        ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { scope.launch { drawerState.open() } }) {
                     Icon(imageVector = Icons.Default.Menu, contentDescription = "menu")
 
                 }
-                BasicTextField(value ="search in mail", singleLine = true, onValueChange = {},
-                    modifier = Modifier.weight(weight = 2.0f))
+                BasicTextField(
+                    value = "search in mail", singleLine = true, onValueChange = {},
+                    modifier = Modifier.weight(weight = 2.0f)
+                )
                 IconButton(onClick = { /*TODO*/ }) {
-                    Image(painter = painterResource(R.drawable.ic_launcher_foreground), contentDescription = "avatar",
+                    Image(
+                        painter = painterResource(R.drawable.ic_launcher_foreground),
+                        contentDescription = "avatar",
                         modifier = Modifier
                             .size(30.dp)
                             .clip(CircleShape)
-                            .background(color = Color.Green))
+                            .background(color = Color.Green)
+                    )
                 }
 
             }
@@ -53,10 +62,5 @@ fun AppBar() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun AppBarPreview() {
-    GmailCloneTheme {
-        AppBar()
-    }
-}
+
+
