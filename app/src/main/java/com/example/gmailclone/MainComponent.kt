@@ -3,10 +3,11 @@ package com.example.gmailclone
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,11 +44,12 @@ fun MainComponent() {
     val scope = rememberCoroutineScope()
     val selectedItem = remember { mutableStateOf(DrawerItems[0]) }
     val navController = rememberNavController()
-
+    val scrollState = rememberScrollState()
     ModalNavigationDrawer(drawerState = drawerState, drawerContent = {
         ModalDrawerSheet {
+            Column(modifier = Modifier.verticalScroll(state = scrollState)) {
             Spacer(Modifier.height(12.dp))
-            NavigationDrawerItem(label = { Text(text = "Gmail" , fontSize = 20.sp) }, icon = {
+            NavigationDrawerItem(label = { Text(text = "Gmail", fontSize = 20.sp) }, icon = {
                 Image(
                     painter = painterResource(id = R.drawable.gmail),
                     contentDescription = "gmail",
@@ -79,24 +80,19 @@ fun MainComponent() {
             Spacer(Modifier.height(6.dp))
             Divider()
         }
-    }, content = {
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Scaffold(topBar = { AppBar(scope, drawerState) },
-                bottomBar = { BottomNav() },
-                content = { innerPadding ->
-                    Column(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                    ) {
-                        NavGraph(navController = navController)
-                    }
-                })
         }
-    })
+    }) {
+        Scaffold(topBar = { AppBar(scope, drawerState) },
+            bottomBar = { BottomNav() },
+            content = { innerPadding ->
+                Column(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                ) {
+                    NavGraph(navController = navController)
+                }
+            })
+    }
 
 }
 
