@@ -90,6 +90,7 @@ fun MainComponent() {
                         .padding(innerPadding)
                 ) {
                     NavGraph(navController = navController)
+
                 }
             })
     }
