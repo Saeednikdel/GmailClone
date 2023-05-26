@@ -2,15 +2,20 @@ package com.example.gmailclone
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -23,8 +28,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,41 +55,52 @@ fun MainComponent() {
     ModalNavigationDrawer(drawerState = drawerState, drawerContent = {
         ModalDrawerSheet {
             Column(modifier = Modifier.verticalScroll(state = scrollState)) {
-            Spacer(Modifier.height(12.dp))
-            NavigationDrawerItem(label = { Text(text = "Gmail", fontSize = 20.sp) }, icon = {
-                Image(
-                    painter = painterResource(id = R.drawable.gmail),
-                    contentDescription = "gmail",
-                    modifier = Modifier.size(40.dp)
-                )
-            }, onClick = { /*TODO*/ }, selected = false)
-            Divider()
-            Spacer(Modifier.height(6.dp))
-            DrawerItems.forEach { item ->
-                NavigationDrawerItem(
-                    icon = {
-                        Icon(
-                            item.icon,
-                            contentDescription = "Localized description"
-                        )
-                    },
-                    label = { Text(item.title) },
-                    selected = item == selectedItem.value,
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                    onClick = {
-                        navController.navigate(item.route) {
-                            popUpTo(navController.graph.findStartDestination().id)
-                        }
-                        scope.launch { drawerState.close() }
-                        selectedItem.value = item
-                    })
+                Spacer(Modifier.height(12.dp))
+                NavigationDrawerItem(label = { Text(text = "Gmail", fontSize = 20.sp) }, icon = {
+                    Image(
+                        painter = painterResource(id = R.drawable.gmail),
+                        contentDescription = "gmail",
+                        modifier = Modifier.size(40.dp)
+                    )
+                }, onClick = { /*TODO*/ }, selected = false)
+                Divider()
+                Spacer(Modifier.height(6.dp))
+                DrawerItems.forEach { item ->
+                    NavigationDrawerItem(
+                        icon = {
+                            Icon(
+                                item.icon,
+                                contentDescription = "Localized description"
+                            )
+                        },
+                        label = { Text(item.title) },
+                        selected = item == selectedItem.value,
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                        onClick = {
+                            navController.navigate(item.route) {
+                                popUpTo(navController.graph.findStartDestination().id)
+                            }
+                            scope.launch { drawerState.close() }
+                            selectedItem.value = item
+                        })
+                }
+                Spacer(Modifier.height(6.dp))
+                Divider()
             }
-            Spacer(Modifier.height(6.dp))
-            Divider()
-        }
         }
     }) {
         Scaffold(topBar = { AppBar(scope, drawerState) },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { /*TODO*/ }) {
+                    Row(modifier = Modifier.padding(start = 15.dp , end = 15.dp),
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Icon(imageVector = Icons.Default.Edit, contentDescription = "compose")
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(text = "Compose", fontWeight = FontWeight.Bold)
+                    }
+                }
+            },
             bottomBar = { BottomNav() },
             content = { innerPadding ->
                 Column(
