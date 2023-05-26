@@ -31,17 +31,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
+import androidx.compose.ui.window.Dialog
 import com.example.gmailclone.R
 
 @Composable
-fun PopupMenu(togglePopup: () -> Unit) {
-    Popup(
-        alignment = Alignment.Center,
-        onDismissRequest = { togglePopup() },
-        properties = PopupProperties(focusable = true, dismissOnBackPress = true)
-    ) {
+fun AccountMenu(togglePopup: () -> Unit) {
+    Dialog(onDismissRequest = { togglePopup() }) {
         Card(
             shape = RoundedCornerShape(20.dp),
             elevation = CardDefaults.cardElevation(), modifier = Modifier.width(320.dp),

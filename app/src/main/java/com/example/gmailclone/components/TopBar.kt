@@ -40,7 +40,7 @@ fun AppBar(scope: CoroutineScope, drawerState: DrawerState) {
         mutableStateOf(false)
     }
     if (popupControl) {
-      PopupMenu { popupControl = false }
+        AccountMenu { popupControl = false }
     }
     Box(modifier = Modifier.padding(10.dp)) {
         Card(
