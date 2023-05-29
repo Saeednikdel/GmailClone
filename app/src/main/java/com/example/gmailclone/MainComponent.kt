@@ -2,12 +2,10 @@ package com.example.gmailclone
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -15,27 +13,30 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.gmailclone.components.AppBar
 import com.example.gmailclone.components.BottomNav
@@ -49,14 +50,19 @@ import kotlinx.coroutines.launch
 fun MainComponent() {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val selectedItem = remember { mutableStateOf(DrawerItems[0]) }
     val navController = rememberNavController()
     val scrollState = rememberScrollState()
+    val snackBarHostState = remember { SnackbarHostState() }
+    val nabBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = nabBackStackEntry?.destination
+
     ModalNavigationDrawer(drawerState = drawerState, drawerContent = {
         ModalDrawerSheet {
             Column(modifier = Modifier.verticalScroll(state = scrollState)) {
                 Spacer(Modifier.height(12.dp))
-                NavigationDrawerItem(label = { Text(text = "Gmail", fontSize = 20.sp) }, icon = {
+                NavigationDrawerItem(label = {
+                    Text(text = "Gmail", fontSize = 20.sp)
+                }, icon = {
                     Image(
                         painter = painterResource(id = R.drawable.gmail),
                         contentDescription = "gmail",
@@ -74,14 +80,15 @@ fun MainComponent() {
                             )
                         },
                         label = { Text(item.title) },
-                        selected = item == selectedItem.value,
+                        selected = currentDestination?.hierarchy?.any {
+                            it.route == item.route
+                        } == true,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
                         onClick = {
                             navController.navigate(item.route) {
                                 popUpTo(navController.graph.findStartDestination().id)
                             }
                             scope.launch { drawerState.close() }
-                            selectedItem.value = item
                         })
                 }
                 Spacer(Modifier.height(6.dp))
@@ -90,16 +97,23 @@ fun MainComponent() {
         }
     }) {
         Scaffold(topBar = { AppBar(scope, drawerState) },
+            snackbarHost = { SnackbarHost(snackBarHostState) },
             floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { /*TODO*/ }) {
-                    Row(modifier = Modifier.padding(start = 15.dp , end = 15.dp),
-                        verticalAlignment = Alignment.CenterVertically) {
-                        Icon(imageVector = Icons.Default.Edit, contentDescription = "compose")
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Text(text = "Compose", fontWeight = FontWeight.Bold)
-                    }
-                }
+                ExtendedFloatingActionButton(
+                    text = { Text(text = "Compose", fontWeight = FontWeight.Bold) },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "compose"
+                        )
+                    },
+                    onClick = {
+                        scope.launch {
+                            snackBarHostState.showSnackbar(
+                                "Snack bar show msg"
+                            )
+                        }
+                    })
             },
             bottomBar = { BottomNav() },
             content = { innerPadding ->
@@ -108,7 +122,6 @@ fun MainComponent() {
                         .padding(innerPadding)
                 ) {
                     NavGraph(navController = navController)
-
                 }
             })
     }
